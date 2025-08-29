@@ -14,7 +14,7 @@ if !isfile(LIB_PATH)
     error("找不到编译后的 Rust 库文件: $(LIB_PATH)。请确保你已成功运行 `cargo build --release`。")
 end
 
-const LIB = Libdl.dlopen(LIB_PATH)
+const LIB = LIB_PATH
 
 function setup_scene(num_particles::Int32)::Ptr{Cvoid}
     ccall((:setup_scene_wrapper, LIB), Ptr{Cvoid}, (Cint,), num_particles)

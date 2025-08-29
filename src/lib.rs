@@ -766,7 +766,7 @@ pub mod FluidSimulation {
         let output = scene.get_output();
         let flat_output: Vec<bool> = output.iter().flat_map(|row| row.iter()).cloned().collect();
         let boxed_output = flat_output.into_boxed_slice();
-        unsafe { Box::into_raw(boxed_output) as *const bool }
+        Box::into_raw(boxed_output) as *const bool
     }
 
     #[unsafe(no_mangle)]
