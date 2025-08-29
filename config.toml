@@ -1,0 +1,8 @@
+[simulation]
+num_particles = 400
+sim_steps = 400
+gravity = [0.0, -9.8]
+
+[window]
+width = 200
+height = 200
