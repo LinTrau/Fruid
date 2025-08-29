@@ -148,7 +148,6 @@ impl FlipFluid {
         let n = self.fNumY as usize;
         self.cellType.fill(CellType::AIR_CELL);
         for i in 0..self.numParticles as usize {
-            // 修正了 x 和 y 坐标的赋值，以匹配 particlePos 数组的结构
             let cell_location_x = floorf(self.particlePos[2 * i]) as usize;
             let cell_location_y = floorf(self.particlePos[2 * i + 1]) as usize;
 
@@ -691,7 +690,6 @@ impl Scene {
         let n = self.fluid.fNumY as usize; 
         for i in 0..self.num_rows as usize {
             for j in 0..self.num_cols as usize {
-                // 修正了索引，以正确地从列主序的 cellType 数组中读取
                 if self.fluid.cellType[j * n + i] == CellType::FLUID_CELL {
                     output_frame[i * self.num_cols as usize + j] = true;
                 }
