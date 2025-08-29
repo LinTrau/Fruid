@@ -7,7 +7,8 @@
 ## 实现原理
 项目基于FLIP(Fluid-Implicit-Particle)方法的流体模拟系统其中重要组成部分及原理如下：
 
-`lib.rs`：
+# `lib.rs`：
+
 1. 核心数据结构：
 - `FlipFluid` 结构体：包含了流体模拟所需的所有数据，如粒子位置、速度、密度等
 - `CellType` 枚举：定义了三种单元格类型：空气(AIR_CELL)、流体(FLUID_CELL)和固体(SOLID_CELL)
@@ -40,6 +41,26 @@ FLIP方法的优点：
 - 比纯网格法能更好地保持细节
 - 数值耗散较小，可以很好地保持流体的动态特性
 
+# `main.jl`
+
+- 自动检查和安装必要的Julia包
+- 主要使用Makie进行可视化，TOML进行配置文件解析
+- 使用`ccall`函数调用编译好的Rust动态库
+- 包装了几个主要的接口：
+  - setup_scene：初始化模拟场景
+  - destroy_scene：清理场景
+  - simulate_step：进行一步模拟
+  - set_gravity：设置重力
+  - get_output：获取模拟结果
+- 使用Makie.jl创建可视化界面
+- 使用heatmap热力图方式显示流体分布
+- Observable用于实现实时更新
+- 使用record函数录制模拟过程
+- 每一帧都：
+  - 调用Rust进行模拟计算
+  - 获取新的模拟数据
+  - 更新可视化显示
+- 最终生成MP4格式的视频文件
 
 ## **注意**
 您需要安装rust和julia才能使用。
