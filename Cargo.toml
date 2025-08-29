@@ -1,0 +1,11 @@
+[package]
+name = "fluid_sim"
+version = "0.1.0"
+edition = "2024"
+
+[lib]
+name = "fluid_sim"
+crate-type = ["cdylib"]
+
+[dependencies]
+libm = "0.2"
