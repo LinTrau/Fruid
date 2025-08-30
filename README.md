@@ -1,11 +1,16 @@
 # Fruid / 基于rust+julia的流体模拟引擎
 
 该引擎以安全而具有良好性能的rust作为后端、Julia的[Makie](https://github.com/MakieOrg/Makie.jl)库作为前端，旨在实现一个具有基本功能的、性能高、易于交互的简单流体模拟引擎。  
-本模拟引擎的一部分实现思路参考自[该项目](https://github.com/Nicholas-L-Johnson/flip-card)。  
+本模拟引擎的一部分实现思路参考自[该项目](https://github.com/Nicholas-L-Johnson/flip-card)，和[Masterchef365的同名项目](https://github.com/Masterchef365/fruid)以及感谢Masterchef365提供的参考文献。  
 *注：这只是个开发练习项目，并不具备专业水准。*
 
 ## 实现原理
-项目基于FLIP(Fluid-Implicit-Particle)方法的流体模拟系统其中重要组成部分及原理如下：
+项目基于FLIP(Fluid-Implicit-Particle)方法的流体模拟系统：  
+- 比纯粒子法计算效率更高
+- 比纯网格法能更好地保持细节
+- 数值耗散较小，可以很好地保持流体的动态特性
+
+**项目中重要组成部分及原理如下：**
 
 ### `lib.rs`：
 
@@ -24,33 +29,10 @@
   - 求解不可压缩性约束
   - 密度更新
 
-3. 关键算法：
-- `integrateParticles`：更新粒子位置和速度
-- `pushParticlesApart`：处理粒子间的排斥力，避免过度聚集
-- `solveIncompressibility`：求解压力方程，确保流体不可压缩性
-- `transferVelocities`：在网格和粒子之间转换速度场
-- `handleParticleCollisions`：处理边界碰撞
-
-4. C语言接口：
-- 提供了一系列带有`#[unsafe(no_mangle)]`标记的函数
-- 允许从C语言调用Rust实现的流体模拟功能
-- 包括场景创建、销毁、模拟步进等功能
-
- FLIP方法的优点：
-- 比纯粒子法计算效率更高
-- 比纯网格法能更好地保持细节
-- 数值耗散较小，可以很好地保持流体的动态特性
-
 ### `main.jl`
 
 - 自动检查和安装必要的Julia包
 - 主要使用Makie进行可视化，TOML进行配置文件解析
-- 使用`ccall`函数调用编译好的Rust动态库
-- 包装了几个主要的接口
-- 使用Makie.jl创建可视化界面
-- 使用heatmap热力图方式显示流体分布
-- Observable用于实现实时更新
-- 使用record函数录制模拟过程
 - 每一帧都：
   - 调用Rust进行模拟计算
   - 获取新的模拟数据
@@ -58,7 +40,7 @@
 - 最终生成MP4格式的视频文件
 
 ## **注意**
-您需要安装rust和julia才能使用。
+您需要安装rust和julia才能使用。如果您是**windows**平台，请将`julia/main.jl`中`const LIB_PATH = abspath(joinpath(SCRIPT_DIR, "../target/release/libFruid.so"))`路径的`.so`改为`.dll`文件。
 
 ## 使用方法
 ```bash
@@ -74,8 +56,7 @@ cargo build --release
 #运行脚本
 julia julia/main.jl
 ```
-请在config.toml中输入模拟参数，模拟视频结果将生成于项目根目录的output文件夹。  
-注意，如果您是**windows**平台，请将`julia/main.jl`中`const LIB_PATH = abspath(joinpath(SCRIPT_DIR, "../target/release/libfluid_sim.so"))`路径的`.so`改为`.dll`文件。  
+请在config.toml中输入模拟参数，模拟视频结果将生成于项目根目录的output文件夹。当再次模拟时仅需要修改模拟参数并`julia julia/main.jl`即可。  
 
 ## 开发目标
 - 实现更多模拟算法

@@ -1,10 +1,10 @@
 [package]
-name = "fluid_sim"
+name = "Fruid"
 version = "0.1.0"
 edition = "2024"
 
 [lib]
-name = "fluid_sim"
+name = "Fruid"
 crate-type = ["cdylib"]
 
 [dependencies]

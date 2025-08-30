@@ -4,5 +4,5 @@ sim_steps = 400
 gravity = [0.0, -9.8]
 
 [window]
-width = 200
-height = 200
+width = 150
+height = 150
