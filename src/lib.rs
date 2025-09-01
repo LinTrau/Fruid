@@ -1,6 +1,7 @@
 #![allow(non_snake_case)]
 #![allow(non_camel_case_types)]
 #![allow(non_upper_case_globals)]
+#[warn(dead_code)]
 
 use libm::{floorf, sqrtf};
 use std::ptr;
@@ -862,7 +863,7 @@ impl Scene {
 //--------------------------------------------------------------------------------
 
 #[unsafe(no_mangle)]
-pub extern "C" fn setup_scene_wrapper(
+pub unsafe extern "C" fn setup_scene_wrapper(
     num_particles: i32,
     num_rows: i32,
     num_cols: i32,
@@ -873,53 +874,81 @@ pub extern "C" fn setup_scene_wrapper(
 }
 
 #[unsafe(no_mangle)]
-pub extern "C" fn destroy_scene_wrapper(ptr: *mut Scene) {
+pub unsafe extern "C" fn destroy_scene_wrapper(ptr: *mut Scene) {
     if ptr.is_null() { return; }
-    unsafe { drop(Box::from_raw(ptr)); }
+    drop(Box::from_raw(ptr));
 }
 
 #[unsafe(no_mangle)]
-pub extern "C" fn simulate_wrapper(ptr: *mut Scene) {
+pub unsafe extern "C" fn simulate_wrapper(ptr: *mut Scene) {
     if ptr.is_null() { return; }
-    let scene = unsafe { &mut *ptr };
+    let scene = &mut *ptr;
     scene.simulate();
 }
 
 #[unsafe(no_mangle)]
-pub extern "C" fn set_gravity_wrapper(ptr: *mut Scene, x_gravity: f32, y_gravity: f32) {
+pub unsafe extern "C" fn set_gravity_wrapper(ptr: *mut Scene, x_gravity: f32, y_gravity: f32) {
     if ptr.is_null() { return; }
-    let scene = unsafe { &mut *ptr };
+    let scene = &mut *ptr;
     scene.set_gravity([x_gravity, y_gravity]);
 }
 
 #[unsafe(no_mangle)]
-pub extern "C" fn get_output_wrapper(ptr: *mut Scene) -> *const bool {
+pub unsafe extern "C" fn get_output_wrapper(ptr: *mut Scene) -> *const bool {
     if ptr.is_null() { return ptr::null(); }
-    let scene = unsafe { &mut *ptr };
+    let scene = &mut *ptr;
     let flat_output = scene.get_output();
     let boxed_output = flat_output.into_boxed_slice();
     Box::into_raw(boxed_output) as *const bool
 }
 
 #[unsafe(no_mangle)]
-pub extern "C" fn get_density_wrapper(ptr: *mut Scene) -> *const f32 {
+pub unsafe extern "C" fn get_density_wrapper(ptr: *mut Scene) -> *const f32 {
     if ptr.is_null() { return ptr::null(); }
-    let scene = unsafe { &mut *ptr };
+    let scene = &mut *ptr;
     scene.get_density_data()
 }
 
 #[unsafe(no_mangle)]
-pub extern "C" fn get_output_rows(ptr: *mut Scene) -> i32 {
+pub unsafe extern "C" fn get_output_rows(ptr: *mut Scene) -> i32 {
     if ptr.is_null() { return 0; }
-    let scene = unsafe { &*ptr };
+    let scene = &*ptr;
     scene.num_rows
 }
 
 #[unsafe(no_mangle)]
-pub extern "C" fn get_output_cols(ptr: *mut Scene) -> i32 {
+pub unsafe extern "C" fn get_output_cols(ptr: *mut Scene) -> i32 {
     if ptr.is_null() { return 0; }
-    let scene = unsafe { &*ptr };
+    let scene = &*ptr;
     scene.num_cols
+}
+
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn get_u_velocity_wrapper(ptr: *mut Scene) -> *const f32 {
+    if ptr.is_null() { return ptr::null(); }
+    let scene = &*ptr;
+    scene.fluid.u.as_ptr()
+}
+
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn get_v_velocity_wrapper(ptr: *mut Scene) -> *const f32 {
+    if ptr.is_null() { return ptr::null(); }
+    let scene = &*ptr;
+    scene.fluid.v.as_ptr()
+}
+
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn get_num_particles_wrapper(ptr: *mut Scene) -> i32 {
+    if ptr.is_null() { return 0; }
+    let scene = &*ptr;
+    scene.fluid.numParticles
+}
+
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn get_particle_positions_wrapper(ptr: *mut Scene) -> *const f32 {
+    if ptr.is_null() { return ptr::null(); }
+    let scene = &*ptr;
+    scene.fluid.particlePos.as_ptr()
 }
 
 fn clamp<T: PartialOrd>(x: T, min: T, max: T) -> T {
