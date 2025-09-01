@@ -595,7 +595,7 @@ impl FlipFluid {
                 let w01 = (1.0 - x_frac) * y_frac;
                 let w11 = x_frac * y_frac;
                 
-                let idx00 = j_cell * self.fNumX as usize + i_cell;
+                let idx00 = i_cell * self.fNumX as usize + j_cell;
                 let idx10 = j_cell * self.fNumX as usize + i_cell + 1;
                 let idx01 = (j_cell + 1) * self.fNumX as usize + i_cell;
                 let idx11 = (j_cell + 1) * self.fNumX as usize + i_cell + 1;
